@@ -12,6 +12,7 @@ if debug:
 
 
 class AddCurrentTimeCommand(sublime_plugin.TextCommand):
+    '''add date time '''
 
     def run(self, edit):
         self.view.run_command("insert_snippet",
@@ -19,12 +20,14 @@ class AddCurrentTimeCommand(sublime_plugin.TextCommand):
                               ).strftime("%Y-%m-%d %H:%M:%S")}  # <<<
                               )
 
-
+#--------------------------------------------------
 class AddSplitLine(sublime_plugin.TextCommand):
+    '''insert split line '''
 
     def run(self, edit):
         self.view.run_command("insert_snippet", {"contents": "#"+'-'*50}
                               )
+#--------------------------------------------------
 
 
 class Wrap_3comma(sublime_plugin.TextCommand):
@@ -33,13 +36,11 @@ class Wrap_3comma(sublime_plugin.TextCommand):
     def run(self, edit):
         view = self.view
         selects = view.sel()
-        if len(selects) > 0:
-            selects = selects[0]    # 获取以一个选中区域
         if selects.empty():
             line = view.line(selects)
-            region_str = view.substr(line)
+            region_str = view.substr(line)  # not select ,then choice line
         else:
-            region_str = view.substr(selects)  # 获取选中区域内容
+            region_str = view.substr(selects[0])  # get selected
 
         #print('<', region_str, '>')
         wrap_ = True
@@ -63,10 +64,9 @@ class Wrap_3comma(sublime_plugin.TextCommand):
         clip_backup = sublime.get_clipboard()
         if words:
             view.run_command('cut')
-        self.view.run_command("insert_snippet", {"contents": content_}
-                              )
         sublime.set_clipboard(clip_backup)
 
+        self.view.run_command("insert_snippet", {"contents": content_})
         # self.view.sel().clear()
         if selects.empty():
             for _ in range(4):
@@ -75,7 +75,7 @@ class Wrap_3comma(sublime_plugin.TextCommand):
                                                "forward": False, }
                                       )
 
-'''> monitor
+'''> monitor all new file
 
 class New_file_config(sublime_plugin.EventListener):
 
@@ -91,9 +91,10 @@ class New_file_config(sublime_plugin.EventListener):
 '''
 
 
-
+# customise kinds of new file
 class New_file2(sublime_plugin.TextCommand):
     """docstring for new_file"""
+
     def run(self, edit):
         window = sublime.active_window()
         view = window.new_file()
@@ -102,10 +103,8 @@ class New_file2(sublime_plugin.TextCommand):
                          {"contents":
                           '#coding:utf8\n'
                           '#author: willowj\n'
-                          '#lisence: MIT\n'
+                          '#license: MIT\n'
                           '#date: ' + datetime.datetime.now(
-                              ).strftime("%Y-%m-%d %H:%M:%S")
+                          ).strftime("%Y-%m-%d %H:%M:%S")
                           }
                          )
-
-
