@@ -11,8 +11,7 @@ if debug:
     sublime.log_commands(True)
 
 
-class AddCurrentTimeCommand(sublime_plugin.TextCommand):
-    '''add date time '''
+class AddCurrentTime(sublime_plugin.TextCommand):
 
     def run(self, edit):
         self.view.run_command("insert_snippet",
@@ -20,63 +19,102 @@ class AddCurrentTimeCommand(sublime_plugin.TextCommand):
                               ).strftime("%Y-%m-%d %H:%M:%S")}  # <<<
                               )
 
-#--------------------------------------------------
+
+# --------------------------------------------------
 class AddSplitLine(sublime_plugin.TextCommand):
-    '''insert split line '''
 
     def run(self, edit):
         self.view.run_command("insert_snippet", {"contents": "#"+'-'*50}
                               )
-#--------------------------------------------------
 
 
 class Wrap_3comma(sublime_plugin.TextCommand):
-    '''wrap with '''''' '''
+    '''#wrap with  3comma: ~ for '
+    if selected
+        |1   ~~~#
+        |2   selected code
+        |3   ~~~
+    not selected:
+        insert or delete ''''''
+        notice: wrap in wrap will split 2 comment parts
+    '''
 
     def run(self, edit):
         view = self.view
         selects = view.sel()
+        if len(selects) > 0:
+            selects = selects[0]    # 获取以一个选中区域
+            print(type(selects))
+
+        wrap_ = True
         if selects.empty():
             line = view.line(selects)
-            region_str = view.substr(line)  # not select ,then choice line
-        else:
-            region_str = view.substr(selects[0])  # get selected
+            region_str = view.substr(line)
+            if re.match("'''[\s\S]*?\n?'''" , region_str):  # unwap
+                wrap_ = False
+                content_ = region_str.replace("'''", "")
+            else:  # wrap > insert ,need't cut
+                content_ = "''''''"
+        else:  # selected
+            region_str = view.substr(selects)  # 获取选中区域内容
+            words = region_str.strip()  # .strip('\n')
+            if words.startswith("'''") and words.endswith("'''"):  # unwrap #<<<
+                wrap_ = False
+                content_ = region_str.replace("'''", "")
+                content_ = content_+'\n'
+            else:  # wrap
+                lines = view.lines(selects)
+                # keep indent space if slelect
+                for line in lines:
+                    _ = view.substr(line)
+                    if any(map(lambda x: x != ' ', _)):
+                        first_line = _
+                        break
+                space = 0
+                for i in first_line:
+                    if i == ' ':
+                        space += 1
+                    else:
+                        break
+                content_ = "{spaces}'''#\n{old_text}\n{spaces}'''\n".format(
+                    old_text=region_str, spaces=" "*space)  # <<<
 
-        #print('<', region_str, '>')
-        wrap_ = True
-
-        words = region_str.strip()
-        if not words:
-            content_ = "''' '''"  # wrap
-        elif words.startswith("'''") and words.endswith("'''"):  # <<<
-            wrap_ = False  # unwrap
-            if not selects.empty():
-                region_str = re.sub("'''[\s\S]*?\n" , "", region_str) + '\n'
-            content_ = region_str.replace("'''", "")
-            content_ = content_+'\n'
-        else:
-            # wrap
-            if not selects.empty():
-                content_ = "'''>\n%s\n'''\n" % region_str  # <<<
-            else:
-                content_ = "'''%s'''\n" % region_str
-
+        # view.replace(edit,selects, content_) #只能替换，不能直接插入
         clip_backup = sublime.get_clipboard()
-        if words:
+        if not(selects.empty() and wrap_):
             view.run_command('cut')
+        self.view.run_command("insert_snippet", {"contents": content_}
+                              )
         sublime.set_clipboard(clip_backup)
 
-        self.view.run_command("insert_snippet", {"contents": content_})
         # self.view.sel().clear()
-        if selects.empty():
-            for _ in range(4):
+        if wrap_:
+            for _ in range(4 - selects.empty()):  # if insert, move 3 to center
                 self.view.run_command("move", {"by": "characters",
                                                "extend": False,
                                                "forward": False, }
                                       )
 
-'''> monitor all new file
 
+class New_file2(sublime_plugin.TextCommand):
+    """customise new_file"""
+
+    def run(self, edit):
+        window = sublime.active_window()
+        view = window.new_file()
+        view.set_name('name.py')
+        view.run_command("insert_snippet",
+                         {"contents":
+                          '#coding:utf8\n'
+                          '#author: willowj\n'
+                          '#license: MIT\n'
+                          '#date: ' + datetime.datetime.now(
+                          ).strftime("%Y-%m-%d %H:%M:%S")+'\n'
+                          }
+                         )
+
+
+'''# monitor all new file
 class New_file_config(sublime_plugin.EventListener):
 
     def on_new(self, view):
@@ -89,22 +127,3 @@ class New_file_config(sublime_plugin.EventListener):
         #     'Packages/PowerShell/Support/PowershellSyntax.tmLanguage')
 
 '''
-
-
-# customise kinds of new file
-class New_file2(sublime_plugin.TextCommand):
-    """docstring for new_file"""
-
-    def run(self, edit):
-        window = sublime.active_window()
-        view = window.new_file()
-        view.set_name('name.py')
-        view.run_command("insert_snippet",
-                         {"contents":
-                          '#coding:utf8\n'
-                          '#author: willowj\n'
-                          '#license: MIT\n'
-                          '#date: ' + datetime.datetime.now(
-                          ).strftime("%Y-%m-%d %H:%M:%S")
-                          }
-                         )

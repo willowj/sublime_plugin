@@ -30,7 +30,7 @@ class New_file2(sublime_plugin.TextCommand):
     Tools > developer > New plugin 
     或者路径：..\Sublime Text 3\Packages\User  (Packages 下的py文件如有更改 会自动重载)
 2. 配置快捷键
-   Preferrence > KeyBinding> User
+   Preferrence > Key Bindings> User
 
 ~~~sublime_setting
 [
@@ -68,3 +68,4 @@ sublime console 就会实时显示所有操作和执行情况
 
 api：http://www.sublimetext.com/docs/3/api_reference.html
 doc_example:http://www.sublimetext.com/docs/plugin-examples
+http://www.sublimetext.com/docs/plugin-basics
