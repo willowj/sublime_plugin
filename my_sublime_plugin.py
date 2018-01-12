@@ -30,7 +30,7 @@ class AddSplitLine(sublime_plugin.TextCommand):
 
 class Wrap_3comma(sublime_plugin.TextCommand):
     '''#wrap with  3comma: ~ for '
-    if selected
+    if selected wrap or unwrap
         |1   ~~~#
         |2   selected code
         |3   ~~~
@@ -60,11 +60,11 @@ class Wrap_3comma(sublime_plugin.TextCommand):
             words = region_str.strip()  # .strip('\n')
             if words.startswith("'''") and words.endswith("'''"):  # unwrap #<<<
                 wrap_ = False
-                content_ = region_str.replace("'''", "")
-                content_ = content_+'\n'
+                content_ = region_str.replace("'''", "") +'\n'
+
             else:  # wrap
                 lines = view.lines(selects)
-                # keep indent space if slelect
+                # keep indent space if select
                 for line in lines:
                     _ = view.substr(line)
                     if any(map(lambda x: x != ' ', _)):
@@ -76,7 +76,7 @@ class Wrap_3comma(sublime_plugin.TextCommand):
                         space += 1
                     else:
                         break
-                content_ = "{spaces}'''#\n{old_text}\n{spaces}'''\n".format(
+                content_ = "{spaces}'''###\n{old_text}\n{spaces}'''\n".format(
                     old_text=region_str, spaces=" "*space)  # <<<
 
         # view.replace(edit,selects, content_) #只能替换，不能直接插入
@@ -87,7 +87,8 @@ class Wrap_3comma(sublime_plugin.TextCommand):
                               )
         sublime.set_clipboard(clip_backup)
 
-        # self.view.sel().clear()
+
+        # move to center if wrap str self.view.sel().clear()
         if wrap_:
             for _ in range(4 - selects.empty()):  # if insert, move 3 to center
                 self.view.run_command("move", {"by": "characters",
@@ -105,13 +106,19 @@ class New_file2(sublime_plugin.TextCommand):
         view.set_name('name.py')
         view.run_command("insert_snippet",
                          {"contents":
-                          '#coding:utf8\n'
+                          '#!/usr/bin/python\n'
+                          '# -*- coding: utf-8 -*-\n'
                           '#author: willowj\n'
                           '#license: MIT\n'
                           '#date: ' + datetime.datetime.now(
                           ).strftime("%Y-%m-%d %H:%M:%S")+'\n'
                           }
                          )
+        view.set_syntax_file(
+            "Packages/Python/Python.sublime-syntax")
+        # if not exist, need to down  '.tmLanguage', or '.sublime-syntax'
+        # syntax file
+
 
 
 '''# monitor all new file
@@ -124,6 +131,6 @@ class New_file_config(sublime_plugin.EventListener):
         view.set_name('na.py')  # <<<
         # <<<  Syntax tmLanguage
         # view.set_syntax_file(
-        #     'Packages/PowerShell/Support/PowershellSyntax.tmLanguage')
+        #     "Packages/Python/Python.sublime-syntax")
 
 '''

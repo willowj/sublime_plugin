@@ -1,6 +1,12 @@
+
+
+[github](https://github.com/willowj/sublime_plugin)
+
 - 自定义新建文本名称、头部信息
 
 ![](http://images2017.cnblogs.com/blog/1083549/201712/1083549-20171230104453851-1988751195.gif)
+
+
 
 ~~~python
 class New_file2(sublime_plugin.TextCommand):
@@ -20,9 +26,11 @@ class New_file2(sublime_plugin.TextCommand):
                          )
 ~~~
 
-- 代码块''' ''''注释
+- 3引号字符串''' ''''   /注释
 
-![](http://images2017.cnblogs.com/blog/1083549/201712/1083549-20171230102301867-1079332164.gif)
+  ![](img/3comma.gif)
+
+
 
  **自定义 sublime plugin 步骤：**
 
@@ -32,15 +40,22 @@ class New_file2(sublime_plugin.TextCommand):
 2. 配置快捷键
    Preferrence > Key Bindings> User
 
-~~~sublime_setting
+~~~json
 [
-    { "keys": ["ctrl+shift+'"], "command": "wrap_3comma" },
-    { "keys": ["ctrl+shift+."], "command": "new_file2" },
+    {"anaconda_linting": false},
+    {"keys": ["ctrl+shift+,"], "command": "add_current_time"},
+    {"keys": ["ctrl+shift+-"], "command": "add_split_line"},
+    {"keys": ["ctrl+shift+'"], "command": "wrap_3comma"},
+
+    {"keys": ["ctrl+shift+."], "command": "new_file2"},
+    {"keys": ["#"], "command": "inser_numbersign"},
+    {"keys": ["ctrl+keypad0"], "command": "test1"}, // debug
+    // {"keys": ["#"], "command": "run_macro_file", "args": {"file": "Packages/User/macro_2.sublime-macro"}},
 ]
 ~~~
 
-​	keys 须是 sublime “key evt” 键盘事件
-​	command 须是对应 自定义plugin 里class name（把非首字母的大写换成 '_'加小写）
+​	keys 须是 sublime key/char evt 键盘事件
+​	command 须是对应 自定义plugin 里class name （驼峰式转下划线 式——把非首字母的大写换成 '_'加小写）
 
 
 
@@ -69,3 +84,10 @@ sublime console 就会实时显示所有操作和执行情况
 api：http://www.sublimetext.com/docs/3/api_reference.html
 doc_example:http://www.sublimetext.com/docs/plugin-examples
 http://www.sublimetext.com/docs/plugin-basics
+http://www.sublimetext.com/docs/commands
+
+python syntax_file  
+
+> (type:tmLanguage) [  MattDMo/PythonImproved ](https://github.com/MattDMo/PythonImproved)
+> sublime-syntax : [sublime  ](https://github.com/sublimehq/Packages/tree/master/Python)
+
