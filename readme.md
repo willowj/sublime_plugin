@@ -28,7 +28,18 @@ class New_file2(sublime_plugin.TextCommand):
 
 - 3引号字符串''' ''''   /注释
 
-  ![](img/3comma.gif)
+  ![](img/3quotes.gif)
+
+
+
+
+- 选择多行
+
+  ​
+
+
+
+
 
 
 
@@ -90,4 +101,3 @@ python syntax_file
 
 > (type:tmLanguage) [  MattDMo/PythonImproved ](https://github.com/MattDMo/PythonImproved)
 > sublime-syntax : [sublime  ](https://github.com/sublimehq/Packages/tree/master/Python)
-
